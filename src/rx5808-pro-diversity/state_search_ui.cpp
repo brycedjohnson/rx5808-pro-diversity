@@ -16,7 +16,7 @@
 #define VOLTAGE_TEXT_SIZE 2
 #define VOLTAGE_TEXT_X 0
 #define VOLTAGE_TEXT_Y SCANBAR_Y+SCANBAR_BORDER_H
-#define VOLTAGE_TEXT_H (CHAR_HEIGHT * CHANNEL_TEXT_SIZE)
+#define VOLTAGE_TEXT_H (CHAR_HEIGHT * VOLTAGE_TEXT_SIZE)
  
 #define FREQUENCY_TEXT_SIZE 2
 #define FREQUENCY_TEXT_X 6
@@ -130,9 +130,6 @@ void StateMachine::SearchStateHandler::drawBorders() {
 }
 
 void StateMachine::SearchStateHandler::drawChannelText() {
-  	uint16_t voltage_temp;
-    uint16_t voltage_temp_dec;
-	
     display.setTextSize(CHANNEL_TEXT_SIZE);
     display.setTextColor(WHITE);
     display.setCursor(CHANNEL_TEXT_X, CHANENL_TEXT_Y);
@@ -143,29 +140,20 @@ void StateMachine::SearchStateHandler::drawChannelText() {
     display.setTextColor(WHITE);
     display.setCursor(CHANNEL_TEXT_X, SCANBAR_Y+SCANBAR_H+4);
     
-    voltage_temp = analogRead(PIN_VBAT);
-    voltage_temp_dec = ((voltage_temp % VBAT_SCALE) * 10) / VBAT_SCALE;
-    //voltage = .9 * voltage + .1 * voltage_temp;  //Simple irr averager
-    Ui::display.print(voltage_temp/(VBAT_SCALE));
-    Ui::display.print(".");
-    Ui::display.print(voltage_temp_dec);
-    Ui::display.print("V");
-
-	
 }
 
 void StateMachine::SearchStateHandler::drawVoltageText() {
     uint16_t voltage_temp;
     uint16_t voltage_temp_dec;
-  
+    static uint16_t voltage= 0;
     display.setTextSize(2);
     display.setTextColor(WHITE);
     display.setCursor(CHANNEL_TEXT_X, SCANBAR_Y+SCANBAR_H+4);
     
-    voltage_temp = analogRead(PIN_VBAT);
-    voltage_temp_dec = ((voltage_temp % VBAT_SCALE) * 10) / VBAT_SCALE;
-    //voltage = .9 * voltage + .1 * voltage_temp;  //Simple irr averager
-    Ui::display.print(voltage_temp/(VBAT_SCALE));
+    voltage_temp = analogRead(PIN_VBAT)*16; //16 scale for a little better int math 
+    voltage = .9 * voltage + .1 * voltage_temp;  //Simple irr averager
+    voltage_temp_dec = ((voltage % (VBAT_SCALE* 16)) * 10) / (VBAT_SCALE*16);
+    Ui::display.print(voltage/(VBAT_SCALE*16));
     Ui::display.print(".");
     Ui::display.print(voltage_temp_dec);
     Ui::display.print("V");
