@@ -100,6 +100,10 @@ void StateMachine::ScreensaverStateHandler::onButtonChange(
 
 
 void StateMachine::ScreensaverStateHandler::onInitialDraw() {
+    uint16_t voltage_temp;
+    uint16_t voltage_temp_dec;
+    //static uint16_t voltage = 0;
+    
     Ui::clear();
 
     if (showLogo) {
@@ -123,9 +127,17 @@ void StateMachine::ScreensaverStateHandler::onInitialDraw() {
 
         Ui::display.setTextSize(2);
         Ui::display.setCursor(
-            SCREEN_WIDTH_MID - ((CHAR_WIDTH + 1) * 2) / 2 * 4 - 1,
+            2,
             SCREEN_HEIGHT - CHAR_HEIGHT * 2 - 2);
         Ui::display.print(Channels::getFrequency(Receiver::activeChannel));
+         Ui::display.print(" ");
+        voltage_temp = analogRead(PIN_VBAT);
+        voltage_temp_dec = ((voltage_temp % VBAT_SCALE) * 10) / VBAT_SCALE;
+        //voltage = .9 * voltage + .1 * voltage_temp;  //Simple irr averager
+        Ui::display.print(voltage_temp/(VBAT_SCALE));
+        Ui::display.print(".");
+        Ui::display.print(voltage_temp_dec);
+        Ui::display.print("V");
     }
 
     Ui::needDisplay();

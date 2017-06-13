@@ -37,7 +37,7 @@ namespace StateMachine {
             void drawScanBar();
             void drawRssiGraph();
             void drawMenu();
-
+            void drawVoltageText();
             void setChannel();
 
         public:

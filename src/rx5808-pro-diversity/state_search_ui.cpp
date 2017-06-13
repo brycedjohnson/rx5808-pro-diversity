@@ -8,11 +8,16 @@
 
 #define BORDER_GRAPH_L_X 59
 
-#define CHANNEL_TEXT_SIZE 5
+#define CHANNEL_TEXT_SIZE 3
 #define CHANNEL_TEXT_X 0
 #define CHANENL_TEXT_Y 0
 #define CHANNEL_TEXT_H (CHAR_HEIGHT * CHANNEL_TEXT_SIZE)
 
+#define VOLTAGE_TEXT_SIZE 2
+#define VOLTAGE_TEXT_X 0
+#define VOLTAGE_TEXT_Y SCANBAR_Y+SCANBAR_BORDER_H
+#define VOLTAGE_TEXT_H (CHAR_HEIGHT * CHANNEL_TEXT_SIZE)
+ 
 #define FREQUENCY_TEXT_SIZE 2
 #define FREQUENCY_TEXT_X 6
 #define FREQUENCY_TEXT_Y (SCREEN_HEIGHT - (CHAR_HEIGHT * 2))
@@ -77,6 +82,13 @@ void StateMachine::SearchStateHandler::onUpdateDraw() {
 
     Ui::clearRect(
         0,
+        VOLTAGE_TEXT_Y,
+        BORDER_GRAPH_L_X,
+        VOLTAGE_TEXT_H
+    );
+    
+    Ui::clearRect(
+        0,
         FREQUENCY_TEXT_Y,
         BORDER_GRAPH_L_X,
         CHAR_HEIGHT * 2
@@ -90,6 +102,7 @@ void StateMachine::SearchStateHandler::onUpdateDraw() {
     );
 
     drawChannelText();
+    drawVoltageText();
     drawFrequencyText();
     drawScanBar();
     drawRssiGraph();
@@ -117,11 +130,47 @@ void StateMachine::SearchStateHandler::drawBorders() {
 }
 
 void StateMachine::SearchStateHandler::drawChannelText() {
+  	uint16_t voltage_temp;
+    uint16_t voltage_temp_dec;
+	
     display.setTextSize(CHANNEL_TEXT_SIZE);
     display.setTextColor(WHITE);
     display.setCursor(CHANNEL_TEXT_X, CHANENL_TEXT_Y);
 
     display.print(Channels::getName(Receiver::activeChannel));
+	
+    display.setTextSize(2);
+    display.setTextColor(WHITE);
+    display.setCursor(CHANNEL_TEXT_X, SCANBAR_Y+SCANBAR_H+4);
+    
+    voltage_temp = analogRead(PIN_VBAT);
+    voltage_temp_dec = ((voltage_temp % VBAT_SCALE) * 10) / VBAT_SCALE;
+    //voltage = .9 * voltage + .1 * voltage_temp;  //Simple irr averager
+    Ui::display.print(voltage_temp/(VBAT_SCALE));
+    Ui::display.print(".");
+    Ui::display.print(voltage_temp_dec);
+    Ui::display.print("V");
+
+	
+}
+
+void StateMachine::SearchStateHandler::drawVoltageText() {
+    uint16_t voltage_temp;
+    uint16_t voltage_temp_dec;
+  
+    display.setTextSize(2);
+    display.setTextColor(WHITE);
+    display.setCursor(CHANNEL_TEXT_X, SCANBAR_Y+SCANBAR_H+4);
+    
+    voltage_temp = analogRead(PIN_VBAT);
+    voltage_temp_dec = ((voltage_temp % VBAT_SCALE) * 10) / VBAT_SCALE;
+    //voltage = .9 * voltage + .1 * voltage_temp;  //Simple irr averager
+    Ui::display.print(voltage_temp/(VBAT_SCALE));
+    Ui::display.print(".");
+    Ui::display.print(voltage_temp_dec);
+    Ui::display.print("V");
+
+  
 }
 
 void StateMachine::SearchStateHandler::drawFrequencyText() {

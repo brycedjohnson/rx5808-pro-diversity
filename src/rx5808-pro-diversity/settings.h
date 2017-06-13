@@ -91,6 +91,7 @@ SOFTWARE.
 // You can use any of the arduino analog pins to measure the voltage of the
 // battery. See additional configuration below.
 //#define USE_VOLTAGE_MONITORING
+#define USE_VOLTAGE_MONITORING
 
 // Choose if you wish to use 8 additional channels:
 //     5362 MHz
